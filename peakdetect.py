@@ -1,11 +1,11 @@
 import sys
-from numpy import NaN, Inf, arange, isscalar
+from numpy import NaN, Inf, arange, isscalar, array
 
 def peakdet(v, delta, x = None):
     """
     Converted from MATLAB script at http://billauer.co.il/peakdet.html
     
-    Currently returns two lists of tuples, but maybe arrays would be better
+    Returns two arrays
     
     function [maxtab, mintab]=peakdet(v, delta, x)
     %PEAKDET Detect peaks in a vector
@@ -70,4 +70,4 @@ def peakdet(v, delta, x = None):
                 mxpos = x[i]
                 lookformax = True
 
-    return maxtab, mintab
+    return array(maxtab), array(mintab)
