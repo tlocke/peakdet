@@ -1,5 +1,5 @@
 import sys
-from numpy import NaN, Inf, arange, isscalar
+from numpy import NaN, Inf, arange, isscalar, asarray
 
 def peakdet(v, delta, x = None):
     """
