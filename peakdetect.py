@@ -1,5 +1,5 @@
 import sys
-from numpy import NaN, Inf, arange, isscalar, array
+from numpy import NaN, Inf, arange, isscalar, asarray, array
 
 def peakdet(v, delta, x = None):
     """
@@ -73,6 +73,7 @@ def peakdet(v, delta, x = None):
     return array(maxtab), array(mintab)
 
 if __name__=="__main__":
+    from matplotlib.pyplot import plot, scatter
     series = [0,0,0,2,0,0,0,-2,0,0,0,2,0,0,0,-2,0]
     maxtab, mintab = peakdet(series,.3)
     plot(series)
