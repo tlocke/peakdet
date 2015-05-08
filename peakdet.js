@@ -1,4 +1,4 @@
-detectPeaks = function(data, delta){
+exports.peakdet = function(data, delta){
 
     var peaks = [],
     valleys = [];
