@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>PeakDet</title>
+    <meta charset="utf-8">
+    <script src="bower_components/papaparse/papaparse.js"></script>
+    <script src="bower_components/chartist/dist/chartist.min.js"></script>
+    <script src="peakdet.js"></script>
+    <link
+      rel="stylesheet"
+      href="bower_components/chartist/dist/chartist.min.css">
+    <script>
+      var min_height = 0.5
+    </script>
+  </head>
+  <body>
+    <h1>Peak Detector</h1>
+
+    <p>
+      Load in a CSV file with a single column of figures, using the button
+      below. Then a graph of the data and all the peaks (in yellow) and the
+      valleys (in pink) will be displayed. The minimum peak height is set at
+      0.5.
+    </p>
+
+    <input type="file" id="file">
+    <div class="ct-chart ct-octave" id="chart1"></div>
+    <pre id="debug"></pre>
+
+    <script>
+      dbge = document.getElementById("debug");
+      function handleFileSelect(evt) {
+        var file = evt.target.files[0];
+        papaConf = {
+          complete: loaded,
+          skipEmptyLines: true,
+          header: false}
+        Papa.parse(file, papaConf);
+      }
+
+      function loaded(results) {
+        errors = results.errors
+        for (var i = 0; i < errors.length; i++) {
+          console.log(errors[i])
+        }
+
+        v = []
+        pks = []
+        vls = []
+        labs = []
+        data = results.data
+        for (var u = 0; u < data.length; u++) {
+          line = data[u]
+          val = parseFloat(line[0])
+          if (isNaN(val)) {
+            continue;
+          }
+          labs.push(v.length)
+          v.push(val)
+          pks.push(null)
+          vls.push(null)
+        }
+        res = peakdet(v, min_height);
+        //var rdbg = res.debug;
+        //dbge.innerHTML = rdbg;
+        peaks = res.peaks
+        if (peaks.length == 0) {
+          console.log(
+            "No peaks detected. The minimum peak height is " + min_height)
+        }
+        valleys = res.valleys
+        for (var i=0; i < peaks.length; i++) {
+          peak = peaks[i]
+          pks[peak.position] = peak.value
+        }
+        for (var i=0; i < valleys.length; i++) {
+          valley = valleys[i]
+          vls[valley.position] = valley.value
+        }
+        var cdata = {
+          labels: labs,
+          series: [v, vls, pks]
+        };
+        new Chartist.Line('#chart1', cdata);
+      }
+
+      document.getElementById('file').addEventListener(
+        'change', handleFileSelect, false);
+    </script>
+  </body>
+</html>

@@ -1,18 +1,25 @@
-exports.peakdet = function(data, delta){
+function peakdet(data, delta){
+    //console.log("data is " + data)
+    //console.log("delta is " + delta)
 
-    var peaks = [],
-    valleys = [];
+    var peaks = [];
+    var valleys = [];
 
-    var min = Infinity,
-    max = -Infinity,
-    minPosition = Number.NaN,
-    maxPosition = Number.NaN;
+    var min = Infinity;
+    var max = -Infinity;
+    var minPosition = Number.NaN;
+    var maxPosition = Number.NaN;
 
     var lookForMax = true;
 
     var current;
+    // var dbg = [];
     for(var i=0; i < data.length; i++){
-        current = data[i];
+        current = parseFloat(data[i]);
+        if (isNaN(current) || !isFinite(current)) {
+          alert("Item that's not a number!");
+          break;
+        }
         if (current > max){
             max = current;
             maxPosition = i;
@@ -21,6 +28,11 @@ exports.peakdet = function(data, delta){
             min = current;
             minPosition = i;
         }
+        /*
+        dbg.push(
+          "looking for max," + lookForMax + ",current," + current + ",pos," +
+          i + ",min," + min + ",max," + max + ",delta," + delta + "<br>")
+        */
 
         if (lookForMax){
             if (current < max - delta){
