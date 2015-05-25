@@ -14,10 +14,11 @@
     <h1>Peak Detector</h1>
 
     <p>
-      Load in a CSV file with a single column of figures, using the button
-      below. Then a graph of the data and all the peaks (in yellow) and the
-      valleys (in pink) will be displayed. The sensitivity is controlled by
-      the value of the minimum peak height. The lower the minimum height, the
+      Load in a CSV file with a two columns of figures (time (in the format
+      YYYY-MM-DDThh:mm) and data), using
+      the button below. Then a graph of the data and all the peaks (in yellow)
+      and the valleys (in pink) will be displayed. The sensitivity is controlled
+      by the value of the minimum peak height. The lower the minimum height, the
       higher the number of peaks. There's an
       <a href="example.csv">example CSV file</a> that you can use to try it
       out if you haven't got any suitable data to hand.
@@ -36,12 +37,17 @@
 
     <script>
       var v;
+      var times;
       var labs;
       var pks = []
       var vls = []
 
       dbge = document.getElementById("debug");
       download_link = document.getElementById("download_link");
+
+      function dateFormat(dt) {
+        return dt.toISOString().slice(0, 16).replace('T', ' ')
+      }
 
       function handleFileSelect(evt) {
         var file = evt.target.files[0];
@@ -90,26 +96,41 @@
           console.log(errors[i])
         }
         v = []
+        times = []
         labs = []
         data = results.data
         for (var u = 0; u < data.length; u++) {
           line = data[u]
-          val = parseFloat(line[0])
+          time = new Date(line[0])
+          if (isNaN(time)) {
+            continue;
+          }
+          val = parseFloat(line[1])
           if (isNaN(val)) {
             continue;
           }
-          labs.push(v.length)
+          if (u % Math.ceil(data.length / 12) == 0) {
+            labs.push(dateFormat(time))
+          } else {
+            labs.push(null)
+          }
+          times.push(time)
           v.push(val)
         }
+        times.reverse();
         v.reverse();
-        calc();
+        if (v.length == 0) {
+          window.alert("No values detected.")
+        } else {
+          calc();
+        }
       }
 
       function downloadCSV() {
         csvArr = []
-        csvArr.push(['data', 'peaks', 'valleys'])
+        csvArr.push(['time', 'data', 'peaks', 'valleys'])
         for (var i = 0; i < v.length; i++) {
-          line = [v[i]]
+          line = [dateFormat(times[i]), v[i]]
           if (pks[i] == null) {
             line.push('')
           } else {
