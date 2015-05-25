@@ -14,8 +14,8 @@
     <h1>Peak Detector</h1>
 
     <p>
-      Load in a CSV file with a two columns of figures (time (in the format
-      YYYY-MM-DDThh:mm) and data), using
+      Load in a CSV file with a three columns of figures (date YYYY-MM-DD, time
+      hh:mm and data), using
       the button below. Then a graph of the data and all the peaks (in yellow)
       and the valleys (in pink) will be displayed. The sensitivity is controlled
       by the value of the minimum peak height. The lower the minimum height, the
@@ -37,6 +37,7 @@
 
     <script>
       var v;
+      var dates;
       var times;
       var labs;
       var pks = []
@@ -101,11 +102,11 @@
         data = results.data
         for (var u = 0; u < data.length; u++) {
           line = data[u]
-          time = new Date(line[0])
+          time = new Date(line[0] + 'T' + line[1])
           if (isNaN(time)) {
             continue;
           }
-          val = parseFloat(line[1])
+          val = parseFloat(line[2])
           if (isNaN(val)) {
             continue;
           }
@@ -128,9 +129,10 @@
 
       function downloadCSV() {
         csvArr = []
-        csvArr.push(['time', 'data', 'peaks', 'valleys'])
+        csvArr.push(['date', 'time', 'data', 'peaks', 'valleys'])
         for (var i = 0; i < v.length; i++) {
-          line = [dateFormat(times[i]), v[i]]
+          dateStr = dateFormat(times[i])
+          line = [dateStr.slice(0, 11), dateStr.slice(11), v[i]]
           if (pks[i] == null) {
             line.push('')
           } else {
